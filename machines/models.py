@@ -99,7 +99,7 @@ class VendingMachine(models.Model):
     location = models.CharField(max_length=255, blank=False, null=False)
     currency = models.CharField(max_length=255, blank=False, null=False)
     date_installed = models.DateTimeField(null=True, blank=True, auto_now=True)
-    manager = models.OneToOneField(
+    manager = models.ForeignKey(
         MachineUser, related_name='vending_machine_manager', null=False, on_delete=models.DO_NOTHING)
 
     def __str__(self):
