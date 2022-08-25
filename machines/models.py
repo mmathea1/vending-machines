@@ -43,7 +43,10 @@ class UserManager(BaseUserManager):
     def create_superuser(self, username, password, email=None):
         user = self.create_user(
             username=username,
-            password=password, code=generate_user_code())
+            password=password,
+            code=generate_user_code(),
+            is_superuser=True
+        )
         user.is_staff = True
         user.is_admin = True
         user.set_password(password)
@@ -62,11 +65,11 @@ class UserManager(BaseUserManager):
 
     @property
     def is_staff(self):
-        return self.is_admin
+        return self.is_staff
 
     @property
     def is_superuser(self):
-        return self.is_admin
+        return self.is_superuser
 
 
 class MachineUser(AbstractBaseUser, PermissionsMixin):
