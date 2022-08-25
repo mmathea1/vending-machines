@@ -97,19 +97,27 @@ class VendingMachine(models.Model):
     name = models.CharField(max_length=255, blank=False,
                             null=False, unique=True)
     location = models.CharField(max_length=255, blank=False, null=False)
+    currency = models.CharField(max_length=255, blank=False, null=False)
     date_installed = models.DateTimeField(null=True, blank=True, auto_now=True)
-    manager = models.OneToOneField(
+    manager = models.ForeignKey(
         MachineUser, related_name='vending_machine_manager', null=False, on_delete=models.DO_NOTHING)
 
     def __str__(self):
-        return '' + self.name + ' - ' + self.location
+        return '{} - {}'.format(self.name, self.location)
 
 
 class CoinsAvailable(models.Model):
     coin = models.IntegerField(null=False, blank=False)
-    total_available = models.IntegerField(null=False, blank=False)
-    vending_machine = models.OneToOneField(
+    total_available = models.IntegerField(null=False, blank=False, default=1)
+    vending_machine = models.ForeignKey(
         to=VendingMachine, blank=False, null=False, on_delete=models.DO_NOTHING, default=1)
+
+    class Meta:
+        unique_together = (('coin', 'vending_machine'))
+        ordering = ('coin', 'vending_machine')
+
+    def __str__(self):
+        return '{} - {}'.format(self.coin, self.vending_machine)
 
 
 class Product(models.Model):
@@ -119,7 +127,7 @@ class Product(models.Model):
     stock = models.IntegerField(null=False, blank=False, default=0)
     code = models.CharField(max_length=255, blank=False,
                             null=False, unique=True)
-    vending_machine = models.OneToOneField(
+    vending_machine = models.ForeignKey(
         to=VendingMachine, blank=False, null=False, on_delete=models.DO_NOTHING, default=1)
 
 
