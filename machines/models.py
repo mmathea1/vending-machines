@@ -103,7 +103,7 @@ class VendingMachine(models.Model):
         MachineUser, related_name='vending_machine_manager', null=False, on_delete=models.DO_NOTHING)
 
     def __str__(self):
-        return '' + self.name + ' - ' + self.location
+        return '{} - {}'.format(self.name, self.location)
 
 
 class CoinsAvailable(models.Model):
