@@ -36,7 +36,6 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, code=generate_random_code())
         user.is_staff = True
         user.set_password(password)
-        # user.
         user.save(using=self._db)
         return user
 
@@ -50,7 +49,6 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.is_admin = True
         user.set_password(password)
-        # user.
         user.save(using=self._db)
         return user
 

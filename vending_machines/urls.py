@@ -22,6 +22,7 @@ router = routers.DefaultRouter()
 router.register(r'machines', VendingMachineViewSet)
 router.register(r'coins', CoinsAvailableViewSet)
 router.register(r'products', ProductViewSet)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 

@@ -1,5 +1,5 @@
 
-from machines.models import CoinsAvailable, Product, VendingMachine, MachineUser
+from machines.models import CoinsAvailable, Product, VendingMachine
 from machines.serializers import CoinsAvailableSerializer, FullProductSerializer, ProductSerializer, VendingMachineSerializer
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
