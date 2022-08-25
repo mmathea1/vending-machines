@@ -116,6 +116,9 @@ class CoinsAvailable(models.Model):
         unique_together = (('coin', 'vending_machine'))
         ordering = ('coin', 'vending_machine')
 
+    def __str__(self):
+        return '{} - {}'.format(self.coin, self.vending_machine)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
