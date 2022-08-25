@@ -86,7 +86,7 @@ class MachineUser(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['code']
     objects = UserManager()
 
     def __str__(self):
