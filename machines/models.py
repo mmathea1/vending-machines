@@ -13,7 +13,7 @@ ORDER_STATUS = (
 )
 
 
-def generate_user_code():
+def generate_random_code():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
 
 
@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
         user = self.model(
             username=username,
             email=self.normalize_email(email),
-            code=generate_user_code()
+            code=generate_random_code()
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -33,7 +33,7 @@ class UserManager(BaseUserManager):
     def create_staffuser(self, username, password, email=None):
         if not username:
             raise ValueError('The given username must be set')
-        user = self.model(username=username, code=generate_user_code())
+        user = self.model(username=username, code=generate_random_code())
         user.is_staff = True
         user.set_password(password)
         # user.
@@ -44,7 +44,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             username=username,
             password=password,
-            code=generate_user_code(),
+            code=generate_random_code(),
             is_superuser=True
         )
         user.is_staff = True
@@ -124,11 +124,15 @@ class Product(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     price = models.DecimalField(
         max_digits=9, decimal_places=2, blank=False, null=False)
-    stock = models.IntegerField(null=False, blank=False, default=0)
+    quantity = models.IntegerField(null=False, blank=False, default=0)
     code = models.CharField(max_length=255, blank=False,
                             null=False, unique=True)
     vending_machine = models.ForeignKey(
         to=VendingMachine, blank=False, null=False, on_delete=models.DO_NOTHING, default=1)
+
+    class Meta:
+        unique_together = (('name', 'price', 'vending_machine'))
+        ordering = ('name', 'quantity')
 
 
 class Order(models.Model):
