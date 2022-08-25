@@ -16,14 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
-from machines.views import VendingMachineViewSet
+from machines.views import CoinsAvailableViewSet, VendingMachineViewSet
 
 router = routers.DefaultRouter()
 router.register(r'machines', VendingMachineViewSet)
+router.register(r'coins', CoinsAvailableViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-   
+
     # POST ability to create vending machine /machine/create
     # ability to view vending machine /machine/<pk> {name, location}
     # ability to add available coins to machine /machine/coins/
