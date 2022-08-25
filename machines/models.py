@@ -133,7 +133,7 @@ class Product(models.Model):
         ordering = ('name', 'quantity')
 
 
-class Order(models.Model):
+class ProductOrder(models.Model):
     product = models.ForeignKey(
         Product, related_name='product_purchased', on_delete=models.DO_NOTHING)
     customer = models.ForeignKey(
