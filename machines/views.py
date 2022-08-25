@@ -14,9 +14,8 @@ class VendingMachineViewSet(viewsets.ViewSet):
     permission_classes = [IsAdminUser]
 
     def create(self, request):
-        data = request.data.copy()
-        serializer = VendingMachineSerializer(data=data)
-        if serializer.is_valid():
+        serializer = VendingMachineSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
