@@ -50,17 +50,29 @@ class FullProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductOrderSerializer(serializers.ModelSerializer):
+class FullProductOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductOrder
-        fields = ['product', 'amount_paid']
+        fields = '__all__'
+
+
+class ProductOrderSerializer(serializers.Serializer):
+    code = serializers.CharField(required=True)
+    product_price = serializers.FloatField(required=False, default=0.0)
+    amount_paid = serializers.FloatField(
+        required=False, default=0.0)
+    change_given = serializers.FloatField(
+        required=False, default=0.0)
+    order_status = serializers.CharField(default='INCOMPLETE')
 
     def validate(self, value):
-        user = self.context['user']
         try:
-            product = Product.objects.get(code=value['product'].code)
+            user = self.context['user']
+            code = value.get('code')
+            amount_paid = value.get('amount_paid')
+            product = Product.objects.get(code=code)
             vm = product.vending_machine
-            if value.get('amount_paid') < product.price:
+            if amount_paid < product.price:
                 raise serializers.ValidationError(
                     'Amount paid is less than the price of the product.')
             if product.quantity < 1:
@@ -69,12 +81,13 @@ class ProductOrderSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'You cannot order from this vending machine')
         except Product.DoesNotExist:
-            raise serializers.ValidationError('v Product does not exist.')
+            raise serializers.ValidationError('Product does not exist.')
         return value
 
     def create(self, validated_data):
-        amount_paid = validated_data['amount_paid']
-        product = validated_data['product']
+        amount_paid = validated_data.get('amount_paid', 0.0)
+        code = validated_data.get('code', None)
+        product = Product.objects.get(code=code)
         change_given = amount_paid - product.price
         # TODO decrease coins available
         p_order = ProductOrder.objects.create(
@@ -85,12 +98,9 @@ class ProductOrderSerializer(serializers.ModelSerializer):
         )
         p_order.order_status = 'COMPLETE'
         p_order.save()
-        product.quantity = product.quantity - 1
+        product.quantity -= 1
         product.save()
-        return p_order
-
-
-class FullProductOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductOrder
-        fields = '__all__'
+        validated_data['change_given'] = p_order.change_given
+        validated_data['order_status'] = p_order.order_status
+        validated_data['product_price'] = product.price
+        return validated_data
