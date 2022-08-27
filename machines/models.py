@@ -1,4 +1,5 @@
 
+from email.policy import default
 import random
 import string
 from django.db import models
@@ -120,8 +121,7 @@ class CoinsAvailable(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
-    price = models.DecimalField(
-        max_digits=9, decimal_places=2, blank=False, null=False)
+    price = models.FloatField(blank=False, null=False)
     quantity = models.IntegerField(null=False, blank=False, default=0)
     code = models.CharField(max_length=255, blank=False,
                             null=False, unique=True)
@@ -132,16 +132,18 @@ class Product(models.Model):
         unique_together = (('name', 'price', 'vending_machine'))
         ordering = ('name', 'quantity')
 
+    def __str__(self):
+        return '{} - {} @ {}'.format(self.name, self.code, self.price)
+
 
 class ProductOrder(models.Model):
     product = models.ForeignKey(
-        Product, related_name='product_purchased', on_delete=models.DO_NOTHING)
+        Product, related_name='product_purchased', on_delete=models.DO_NOTHING, blank=False, null=False, default=1)
     customer = models.ForeignKey(
         MachineUser, on_delete=models.DO_NOTHING, null=False)
-    amount_paid = models.DecimalField(
-        null=False, blank=False, max_digits=9, decimal_places=2,)
-    change_given = models.DecimalField(
-        null=False, blank=False, max_digits=9, decimal_places=2,)
+    amount_paid = models.FloatField(null=False, blank=False, default=0.0)
+    change_given = models.FloatField(null=False, blank=False, default=0.0)
     order_status = models.CharField(
-        max_length=255, blank=False, null=False, choices=ORDER_STATUS)
-    order_date = models.DateTimeField(null=False, blank=False, auto_now=True)
+        max_length=255, blank=False, null=False, choices=ORDER_STATUS, default='INCOMPLETE')
+    order_date = models.DateTimeField(
+        null=False, blank=False, auto_now=True)
